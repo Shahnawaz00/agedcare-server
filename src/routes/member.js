@@ -28,16 +28,35 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// Function to convert date string to SQL datetime format
+const convertToDate = (dateString) => {
+    const [year, month, day] = dateString.split('-');
+    return new Date(year, month - 1, day).toISOString();
+  };
 // POST create new member
 router.post('/', async (req, res) => {
-  const newMember = req.body;
-  try {
-    const createdMember = await prisma.member.create({ data: newMember });
-    res.status(201).json(createdMember);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+    const dateOfBirth = convertToDate(req.body.dateOfBirth);
+    try {
+      // Create a new member along with associated data
+      const newMember = await prisma.member.create({
+        data: {
+            name: req.body.name,
+            date_of_birth: dateOfBirth, // Use the corrected field name
+            gender: req.body.gender,
+            emergency_contact: req.body.emergencyContact,
+            next_of_kin: req.body.nextOfKin,
+            mailing_address: req.body.mailingAddress,
+            allergies_or_diet: req.body.allergiesOrDiet,
+            current_medications: req.body.currentMedications,
+            general_practitioner: req.body.generalPractitioner,
+        },
+      });
+      res.status(201).json(newMember); // Send the newly created member as JSON response
+    } catch (error) {
+      console.error('Error creating member:', error);
+      res.status(500).json({ error: 'Failed to create member' }); // Handle server error
+    }
+  });
 
 // PUT update member by ID
 router.put('/:id', async (req, res) => {
