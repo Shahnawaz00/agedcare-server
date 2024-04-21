@@ -36,25 +36,25 @@ const convertToDate = (dateString) => {
 // POST endpoint to create a new appointment
 router.post('/', async (req, res) => {
   try {
-    const { member_id, staff_id, service_id, facility_id, appointment_date, appointment_time, notes } = req.body;
+    const { memberId, staffId, serviceId, facilityId, appointmentDate, appointmentTime, notes } = req.body;
 
     // Validate input data (you can add more validation as needed)
-    if (!member_id || !staff_id || !service_id || !facility_id || !appointment_date || !appointment_time) {
+    if (!memberId || !staffId || !serviceId || !facilityId || !appointmentDate || !appointmentTime) {
       console.error('Missing required fields', req.body);
       return res.status(400).json({ error: 'Missing required fields' });
     }
-    const appointment_date_converted = convertToDate(appointment_date);
+    const appointmentDateConverted = convertToDate(appointmentDate);
 
     // Create the appointment in the database
     const appointment = await prisma.appointment.create({
       data: {
-        member_id,
-        staff_id,
-        service_id,
-        facility_id,
-        appointment_date: appointment_date_converted,
-        appointment_time,
-        notes
+        member_id: parseInt(memberId),
+        staff_id: parseInt(staffId),
+        service_id: parseInt(serviceId),
+        facility_id: parseInt(facilityId),
+        appointment_date: appointmentDateConverted,
+        appointment_time: appointmentTime,
+        notes: notes
       }
     });
 
