@@ -32,27 +32,40 @@ const convertToDate = (dateString) => {
   const [year, month, day] = dateString.split('-');
   return new Date(year, month - 1, day).toISOString();
 };
-// POST create new appointment
+
+// POST endpoint to create a new appointment
 router.post('/', async (req, res) => {
-  const { memberId, staffId, serviceId, facilityId, appointmentDate, appointmentTime, notes } = req.body;
   try {
-    const newAppointment = await prisma.appointment.create({
+    const { member_id, staff_id, service_id, facility_id, appointment_date, appointment_time, notes } = req.body;
+
+    // Validate input data (you can add more validation as needed)
+    if (!member_id || !staff_id || !service_id || !facility_id || !appointment_date || !appointment_time) {
+      console.error('Missing required fields', req.body);
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    const appointment_date_converted = convertToDate(appointment_date);
+
+    // Create the appointment in the database
+    const appointment = await prisma.appointment.create({
       data: {
-        member_id: parseInt(memberId),
-        staff_id: parseInt(staffId),
-        service_id: parseInt(serviceId),
-        facility_id: parseInt(facilityId),
-        appointment_date: new Date(appointmentDate),
-        appointment_time: appointmentTime,
-        notes: notes || null,
-      },
+        member_id,
+        staff_id,
+        service_id,
+        facility_id,
+        appointment_date: appointment_date_converted,
+        appointment_time,
+        notes
+      }
     });
-    res.status(201).json(newAppointment);
+
+    // Return the created appointment
+    res.status(201).json(appointment);
   } catch (error) {
-    console.error('Error creating appointment:', error);
-    res.status(500).json({ error: 'Failed to create appointment' });
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 // PUT update appointment by ID
 router.put('/:id', async (req, res) => {
