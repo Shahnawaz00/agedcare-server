@@ -13,27 +13,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Admin {
+  admin_id Int     @id @default(autoincrement())
+  name     String
+  email    String? @unique
+  password String?
+}
+
 model Member {
   member_id            Int           @id @default(autoincrement())
   name                 String
+  email                String?       @unique
+  password             String?
   date_of_birth        DateTime
   gender               String
   emergency_contact    String
   next_of_kin          String
   mailing_address      String
-  allergies_or_diet    String
-  current_medications  String
-  general_practitioner String
+  allergies_or_diet    String?
+  current_medications  String?
+  general_practitioner String?
   appointments         Appointment[]
 }
 
 model Staff {
   staff_id            Int           @id @default(autoincrement())
   name                String
+  email               String?       @unique
+  password            String?
   contact_information String
-  qualifications      String
-  role                String
-  availability        String
+  qualifications      String?
+  role                String?
+  availability        String?
   appointments        Appointment[]
   Schedule            Schedule[]
 }
@@ -50,20 +61,20 @@ model Facility {
   facility_id        Int           @id @default(autoincrement())
   room_number        String
   occupancy_status   String
-  reservation_length String
-  date_reserved      DateTime
+  reservation_length String?
+  date_reserved      DateTime?
   appointments       Appointment[]
 }
 
 model Appointment {
-  appointment_id   Int      @id @default(autoincrement())
+  appointment_id   Int       @id @default(autoincrement())
   member_id        Int
   staff_id         Int
   service_id       Int
   facility_id      Int
-  appointment_date DateTime
-  appointment_time String
-  notes            String
+  appointment_date DateTime?
+  appointment_time String?
+  notes            String?
 
   member   Member   @relation(fields: [member_id], references: [member_id])
   staff    Staff    @relation(fields: [staff_id], references: [staff_id])
@@ -72,20 +83,20 @@ model Appointment {
 }
 
 model Medication {
-  medication_id    Int        @id @default(autoincrement())
-  medication_name  String
-  dosage_form      String
-  quantity_on_hand Int
-  expiration_date  DateTime
-  inventory        Inventory? @relation("MedicationToInventory", fields: [medication_id], references: [inventory_id])
+  medication_id   Int         @id @default(autoincrement())
+  medication_name String
+  dosage_form     String
+  expiration_date DateTime
+  Inventory       Inventory[]
 }
 
 model Inventory {
   inventory_id   Int         @id @default(autoincrement())
-  medication_id  Int
+  medication_id  Int?
+  name           String
   quantity       Int
   last_restocked DateTime
-  medication     Medication? @relation("MedicationToInventory")
+  medication     Medication? @relation(fields: [medication_id], references: [medication_id])
 }
 
 model Schedule {
