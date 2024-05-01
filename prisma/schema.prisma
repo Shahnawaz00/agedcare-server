@@ -75,11 +75,10 @@ model Appointment {
   appointment_date DateTime?
   appointment_time String?
   notes            String?
-
-  member   Member   @relation(fields: [member_id], references: [member_id])
-  staff    Staff    @relation(fields: [staff_id], references: [staff_id])
-  service  Service  @relation(fields: [service_id], references: [service_id])
-  facility Facility @relation(fields: [facility_id], references: [facility_id])
+  member   Member   @relation(fields: [member_id], references: [member_id], onUpdate: Cascade, onDelete: Cascade)
+  staff    Staff    @relation(fields: [staff_id], references: [staff_id], onUpdate: Cascade, onDelete: Cascade)
+  service  Service  @relation(fields: [service_id], references: [service_id], onUpdate: Cascade, onDelete: Cascade)
+  facility Facility @relation(fields: [facility_id], references: [facility_id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Medication {
@@ -92,11 +91,10 @@ model Medication {
 
 model Inventory {
   inventory_id   Int         @id @default(autoincrement())
-  medication_id  Int?
-  name           String
+  medication_id  Int
   quantity       Int
   last_restocked DateTime
-  medication     Medication? @relation(fields: [medication_id], references: [medication_id])
+  medication     Medication? @relation(fields: [medication_id], references: [medication_id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Schedule {
@@ -105,6 +103,5 @@ model Schedule {
   date             DateTime
   shift_start_time String
   shift_end_time   String
-
-  staff Staff @relation(fields: [staff_id], references: [staff_id])
+  staff Staff @relation(fields: [staff_id], references: [staff_id], onUpdate: Cascade, onDelete: Cascade)
 }

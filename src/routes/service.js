@@ -31,4 +31,36 @@ router.post('/', async (req, res) => {
   }
 });
 
+// GET a specific service by ID
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const service = await prisma.service.findUnique({
+      where: { service_id: parseInt(id) },
+    });
+    if (service) {
+      res.json(service);
+    } else {
+      res.status(404).json({ message: 'Service not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching service:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// DELETE a service by ID
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await prisma.service.delete({
+      where: { service_id: parseInt(id) }
+    });
+    res.status(200).json({ message: 'Service deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting service:', error);
+    res.status(500).json({ error: 'Failed to delete service' });
+  }
+});
+
 module.exports = router;
