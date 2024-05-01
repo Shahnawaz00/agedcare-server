@@ -14,6 +14,21 @@ router.get('/', async (req, res) => {
   }
 });
 
-
+// POST a new service
+router.post('/', async (req, res) => {
+  const { service_type, duration, description } = req.body;
+  try {
+    const newService = await prisma.service.create({
+      data: {
+        service_type,
+        duration,
+        description
+      }
+    });
+    res.status(201).json(newService);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create service' });
+  }
+});
 
 module.exports = router;
