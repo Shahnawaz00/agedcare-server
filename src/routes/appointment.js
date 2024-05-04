@@ -4,15 +4,44 @@ const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
+
+const convertToDate = (dateString) => {
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day);
+};
 // GET all appointments
+// GET appointments by date
 router.get('/', async (req, res) => {
   try {
-    const appointments = await prisma.appointment.findMany();
+    const { date } = req.query;
+    let appointments;
+    if (date) {
+      // Convert date string to JavaScript Date object
+      const parsedDate = convertToDate(date);
+      if (!isNaN(parsedDate)) {
+        appointments = await prisma.appointment.findMany({
+          where: {
+            appointment_date: parsedDate
+          }
+        });
+      } else {
+        return res.status(400).json({ error: 'Invalid date format' });
+      }
+    } else {
+      appointments = await prisma.appointment.findMany();
+    }
+    
+    if (appointments.length === 0) {
+      return res.status(404).json({ error: 'No appointments found' });
+    }
+
     res.json(appointments);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 // GET appointment by ID
 router.get('/:id', async (req, res) => {
@@ -28,10 +57,41 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-const convertToDate = (dateString) => {
-  const [year, month, day] = dateString.split('-');
-  return new Date(year, month - 1, day).toISOString();
-};
+
+
+// GET appointments by date
+router.get('/date', async (req, res) => {
+  try {
+    const { date } = req.query;
+    let appointments;
+    if (date) {
+      // Convert date string to JavaScript Date object
+      const parsedDate = new Date(date);
+      if (!isNaN(parsedDate)) {
+        appointments = await prisma.appointment.findMany({
+          where: {
+            appointment_date: parsedDate
+          }
+        });
+      } else {
+        return res.status(400).json({ error: 'Invalid date format' });
+      }
+    } else {
+      appointments = await prisma.appointment.findMany();
+    }
+    
+    if (appointments.length === 0) {
+      return res.status(404).json({ error: 'No appointments found' });
+    }
+
+    res.json(appointments);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 
 // POST endpoint to create a new appointment
 router.post('/', async (req, res) => {
