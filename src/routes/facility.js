@@ -4,30 +4,28 @@ const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
-// GET all staff
+// GET all facilities
 router.get('/', async (req, res) => {
   try {
-    const staff = await prisma.staff.findMany();
-    res.json(staff);
+    const facilities = await prisma.facility.findMany();
+    res.json(facilities);
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// GET staff by ID
+// GET facility by ID
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const staff = await prisma.staff.findUnique({ where: { staff_id: parseInt(id) } });
-    if (!staff) {
-      return res.status(404).json({ error: 'Staff not found' });
+    const facility = await prisma.facility.findUnique({ where: { facility_id: parseInt(id) } });
+    if (!facility) {
+      return res.status(404).json({ error: 'Facility not found' });
     }
-    res.json(staff);
+    res.json(facility);
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-
 
 module.exports = router;
