@@ -14,20 +14,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET service by ID
-router.get('/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const service = await prisma.service.findUnique({ where: { service_id: parseInt(id) } });
-    if (!service) {
-      return res.status(404).json({ error: 'Service not found' });
-    }
-    res.json(service);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
 router.post('/', async (req, res) => {
   const { service_type, duration, description } = req.body;
 
