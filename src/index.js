@@ -21,7 +21,11 @@ app.use('/api/services', require('./routes/service'));
 app.use('/api/staff', require('./routes/staff'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/inventory', require('./routes/inventory'));
-app.use('/api/appointments', require('./routes/appointment'));
+app.use('/api/appointment', require('./routes/appointment'));
+app.use('/api/medication', require('./routes/medication'));
+app.use('/api/schedule', require('./routes/schedule'));
+app.use('/api/facility', require('./routes/facility'));
+app.use('/api/admin', require('./routes/admin'));
 app.use('/api/facilities', require('./routes/facility'));
 
 
