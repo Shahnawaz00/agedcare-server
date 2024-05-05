@@ -20,11 +20,17 @@ router.post('/', async (req, res) => {
     // Extract data from request body
     const { name, email, password, contact_information, qualifications, role, availability } = req.body;
     // Create new staff member in the database
+    const bcrypt = require('bcrypt');
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new staff member in the database
     const newStaff = await prisma.staff.create({
       data: {
         name,
         email,
-        password,  // Note: Store passwords securely using hashing (e.g., bcrypt) in a real application
+        password: hashedPassword,
         contact_information,
         qualifications,
         role,
