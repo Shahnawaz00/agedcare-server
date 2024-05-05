@@ -59,7 +59,7 @@ router.post('/', async (req, res) => {
 // PUT update facility by ID
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const dateReserved = req.body.dateReserved ? convertToDate(req.body.dateReserved) : undefined;
+    const date_reserved = req.body.date_reserved ? convertToDate(req.body.date_reserved) : undefined;
     try {
         const existingFacility = await prisma.facility.findUnique({ where: { facility_id: parseInt(id) } });
         if (!existingFacility) {
@@ -68,10 +68,10 @@ router.put('/:id', async (req, res) => {
         const updatedFacility = await prisma.facility.update({
             where: { facility_id: parseInt(id) },
             data: {
-                roomNumber: req.body.roomNumber,
-                occupancyStatus: req.body.occupancyStatus,
-                reservationLength: req.body.reservationLength,
-                dateReserved: dateReserved,
+                room_number: req.body.room_number,
+                occupancy_status: req.body.occupancy_status,
+                reservation_length: req.body.reservation_length,
+                date_reserved: date_reserved,
             },
         });
         res.json(updatedFacility);
