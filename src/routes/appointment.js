@@ -153,5 +153,35 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+// PATCH update appointment by ID
+router.patch('/:id', async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+
+  // Optionally handle appointmentDate conversion if it's provided in the update
+  if (updates.appointmentDate) {
+    try {
+      updates.appointment_date = convertToDate(updates.appointmentDate);
+      delete updates.appointmentDate;  // Remove the original key to prevent confusion
+    } catch (error) {
+      return res.status(400).json({ error: 'Invalid date format for appointment date' });
+    }
+  }
+
+  try {
+    const updatedAppointment = await prisma.appointment.update({
+      where: { appointment_id: parseInt(id) },
+      data: updates
+    });
+    res.json(updatedAppointment);
+  } catch (error) {
+    console.error('Error updating appointment:', error);
+    if (error.code === 'P2025') {  // Check if the appointment does not exist
+      res.status(404).json({ error: 'Appointment not found' });
+    } else {
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+});
 
 module.exports = router;

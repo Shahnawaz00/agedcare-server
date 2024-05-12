@@ -35,7 +35,7 @@ const convertToDate = (dateString) => {
   };
 // POST create new member
 router.post('/', async (req, res) => {
-    const dateOfBirth = convertToDate(req.body.dateOfBirth);
+    const dateOfBirth = convertToDate(req.body.date_of_birth);
     try {
       // Create a new member along with associated data
       const newMember = await prisma.member.create({
@@ -57,22 +57,55 @@ router.post('/', async (req, res) => {
       res.status(500).json({ error: 'Failed to create member' }); // Handle server error
     }
   });
-
-// PUT update member by ID
+// PUT - Update a member completely
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const updatedMember = req.body;
+  const dateOfBirth = convertToDate(req.body.date_of_birth);
+
   try {
-    const existingMember = await prisma.member.findUnique({ where: { member_id: parseInt(id) } });
-    if (!existingMember) {
-      return res.status(404).json({ error: 'Member not found' });
-    }
-    const updated = await prisma.member.update({ where: { member_id: parseInt(id) }, data: updatedMember });
-    res.json(updated);
+    const updatedMember = await prisma.member.update({
+      where: { member_id: parseInt(id) },
+      data: {
+        name: req.body.name,
+        date_of_birth: dateOfBirth,
+        gender: req.body.gender,
+        emergency_contact: req.body.emergencyContact,
+        next_of_kin: req.body.nextOfKin,
+        mailing_address: req.body.mailingAddress,
+        allergies_or_diet: req.body.allergiesOrDiet,
+        current_medications: req.body.currentMedications,
+        general_practitioner: req.body.generalPractitioner,
+      }
+    });
+    res.json(updatedMember);
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Error updating member:', error);
+    res.status(500).json({ error: 'Failed to update member' });
   }
 });
+// PATCH - Partially update a member
+router.patch('/:id', async (req, res) => {
+  const { id } = req.params;
+  const updateData = { ...req.body };
+
+  // Handle date of birth conversion if provided
+  if (updateData.date_of_birth) {
+    updateData.date_of_birth = convertToDate(updateData.date_of_birth);
+    delete updateData.date_of_birth; // Remove the original key to avoid confusion
+  }
+
+  try {
+    const updatedMember = await prisma.member.update({
+      where: { member_id: parseInt(id) },
+      data: updateData
+    });
+    res.json(updatedMember);
+  } catch (error) {
+    console.error('Error partially updating member:', error);
+    res.status(500).json({ error: 'Failed to partially update member' });
+  }
+});
+
 
 // DELETE member by ID
 router.delete('/:id', async (req, res) => {
@@ -84,5 +117,6 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 module.exports = router;

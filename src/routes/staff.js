@@ -77,6 +77,58 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// PUT - Update a staff member completely
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, email, password, contact_information, qualifications, role, availability } = req.body;
+  try {
+    const bcrypt = require('bcrypt');
+    const hashedPassword = await bcrypt.hash(password, 10);  // Assuming you need to update the password
+
+    const updatedStaff = await prisma.staff.update({
+      where: { staff_id: parseInt(id) },
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        contact_information,
+        qualifications,
+        role,
+        availability
+      }
+    });
+    res.json(updatedStaff);
+  } catch (error) {
+    console.error('Error updating staff member:', error);
+    res.status(500).json({ error: 'Failed to update staff member' });
+  }
+});
+
+// PATCH - Partially update a staff member
+router.patch('/:id', async (req, res) => {
+  const { id } = req.params;
+  const updateData = { ...req.body };
+
+  // Optionally handle password updates
+  if (updateData.password) {
+    const bcrypt = require('bcrypt');
+    updateData.password = await bcrypt.hash(updateData.password, 10);
+  }
+
+  try {
+    const updatedStaff = await prisma.staff.update({
+      where: { staff_id: parseInt(id) },
+      data: updateData
+    });
+    res.json(updatedStaff);
+  } catch (error) {
+    console.error('Error partially updating staff member:', error);
+    res.status(500).json({ error: 'Failed to partially update staff member' });
+  }
+});
+
+module.exports = router;
+
 
 
 module.exports = router;

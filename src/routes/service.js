@@ -82,5 +82,41 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to delete service' });
   }
 });
+// PUT - Update a service completely
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { service_type, duration, description } = req.body;
+
+  try {
+    const updatedService = await prisma.service.update({
+      where: { service_id: parseInt(id) },
+      data: {
+        service_type,
+        duration,
+        description
+      }
+    });
+    res.json(updatedService);
+  } catch (error) {
+    console.error('Error updating service:', error);
+    res.status(500).json({ error: 'Failed to update service' });
+  }
+});
+// PATCH - Partially update a service
+router.patch('/:id', async (req, res) => {
+  const { id } = req.params;
+  const updateData = { ...req.body };
+
+  try {
+    const updatedService = await prisma.service.update({
+      where: { service_id: parseInt(id) },
+      data: updateData
+    });
+    res.json(updatedService);
+  } catch (error) {
+    console.error('Error partially updating service:', error);
+    res.status(500).json({ error: 'Failed to partially update service' });
+  }
+});
 
 module.exports = router;

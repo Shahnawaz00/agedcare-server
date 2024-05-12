@@ -35,21 +35,32 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST create new profile
+const bcrypt = require('bcrypt');
+
 router.post('/', async (req, res) => {
     const { name, email, password } = req.body;
+
     try {
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create new admin in the database with the hashed password
         const newAdmin = await prisma.admin.create({
             data: {
                 name,
                 email,
-                password  // Hash the password in production using bcrypt or similar library
+                password: hashedPassword  // Store the hashed password
             }
         });
+
+        // Send the newly created admin as the response
         res.status(201).json(newAdmin);
     } catch (error) {
+        console.error('Error creating admin:', error);
         res.status(500).json({ error: 'Failed to create profile' });
     }
 });
+
 
 // PUT update profile by ID (full update)
 router.put('/:id', async (req, res) => {
