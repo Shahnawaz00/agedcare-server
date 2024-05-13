@@ -14,34 +14,56 @@ router.get('/', async (req, res) => {
   }
 });
 
+const convertToDate = (dateString) => {
+  const [year, month, day] = dateString.split('-');
+  return new Date(year, month - 1, day).toISOString();
+};
 // POST create new staff member
 router.post('/', async (req, res) => {
   try {
     // Extract data from request body
-    const { name, email, password, contact_information, qualifications, role, availability } = req.body;
-    // Create new staff member in the database
-    const bcrypt = require('bcrypt');
-
+    const { name, email, password, medicare_number, medicare_irn, gender, phoneNo, emergency_phoneNo, emergency_contact, next_of_kin, nok_name, nok_phoneNo, nok_email, nok_relationship, mailing_address, allergies_or_diet, allergies, medical_conditions, dietary_restrictions, current_medications, general_practitioner } = req.body;
+    
     // Hash the password
+    const bcrypt = require('bcrypt');
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new staff member in the database
-    const newStaff = await prisma.staff.create({
+    const date_of_birth = convertToDate(req.body.date_of_birth);
+    const medicare_expiry_date = convertToDate(req.body.medicare_expiry_date);
+
+    // Create new member in the database
+    const newMember = await prisma.member.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        contact_information,
-        qualifications,
-        role,
-        availability
+        date_of_birth,
+        medicare_number,
+        medicare_irn,
+        medicare_expiry_date,
+        gender,
+        phoneNo,
+        emergency_phoneNo,
+        emergency_contact,
+        next_of_kin,
+        nok_name,
+        nok_phoneNo,
+        nok_email,
+        nok_relationship,
+        mailing_address,
+        allergies_or_diet,
+        allergies,
+        medical_conditions,
+        dietary_restrictions,
+        current_medications,
+        general_practitioner
       }
     });
-    // Send the newly created staff member as the response
-    res.status(201).json(newStaff);
+
+    res.status(201).json(newMember); // Send the newly created member as JSON response
   } catch (error) {
-    console.error('Error creating staff:', error);
-    res.status(500).json({ error: 'Failed to create staff member' });
+    console.error('Error creating member:', error);
+    res.status(500).json({ error: 'Failed to create member' }); // Handle server error
   }
 });
 

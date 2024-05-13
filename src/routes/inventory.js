@@ -8,8 +8,7 @@ const prisma = new PrismaClient();
 const convertToDate = (dateString) => {
     const [year, month, day] = dateString.split('-');
     return new Date(year, month - 1, day).toISOString();
-};
-
+  };
 // GET all inventory items
 router.get('/', async (req, res) => {
     try {
@@ -36,14 +35,20 @@ router.get('/:id', async (req, res) => {
 
 // POST create new inventory item
 router.post('/', async (req, res) => {
-    const idate = convertToDate(req.body.lastRestocked);
+
+    const {category,name } = req.body;
+    const medication_id = parseInt(req.body.medication_id);
+    const quantity = parseInt(req.body.quantity);
+    const last_restocked = convertToDate(req.body.last_restocked);
 
     try {
         const newItem = await prisma.inventory.create({
             data: {
-                medication_id: parseInt(req.body.medicationId, 10), // Ensure medication_id is an integer
-                quantity: parseInt(req.body.quantity, 10), // Ensure quantity is an integer
-                last_restocked: idate, // Convert date string to Date object
+                medication_id,
+                category,
+                name,
+                quantity,
+                last_restocked,
             },
         });
         res.status(201).json(newItem);

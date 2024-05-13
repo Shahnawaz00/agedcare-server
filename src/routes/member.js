@@ -35,28 +35,54 @@ const convertToDate = (dateString) => {
   };
 // POST create new member
 router.post('/', async (req, res) => {
-    const dateOfBirth = convertToDate(req.body.dateOfBirth);
-    try {
-      // Create a new member along with associated data
-      const newMember = await prisma.member.create({
-        data: {
-            name: req.body.name,
-            date_of_birth: dateOfBirth, // Use the corrected field name
-            gender: req.body.gender,
-            emergency_contact: req.body.emergencyContact,
-            next_of_kin: req.body.nextOfKin,
-            mailing_address: req.body.mailingAddress,
-            allergies_or_diet: req.body.allergiesOrDiet,
-            current_medications: req.body.currentMedications,
-            general_practitioner: req.body.generalPractitioner,
-        },
-      });
-      res.status(201).json(newMember); // Send the newly created member as JSON response
-    } catch (error) {
-      console.error('Error creating member:', error);
-      res.status(500).json({ error: 'Failed to create member' }); // Handle server error
-    }
-  });
+  try {
+    // Extract data from request body
+    const { name, email, password, medicare_number, medicare_irn, gender, phoneNo, emergency_phoneNo, emergency_contact, next_of_kin, nok_name, nok_phoneNo, nok_email, nok_relationship, mailing_address, billing_address, allergies_or_diet, allergies, medical_conditions, dietary_restrictions, current_medications, general_practitioner } = req.body;
+    
+    // Hash the password
+    const bcrypt = require('bcrypt');
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const date_of_birth = convertToDate(req.body.date_of_birth);
+    const medicare_expiry_date = convertToDate(req.body.medicare_expiry_date);
+
+    // Create new member in the database
+    const newMember = await prisma.member.create({
+      data: {
+        name,
+        email,
+        // password: hashedPassword,
+        date_of_birth,
+        medicare_number,
+        medicare_irn,
+        medicare_expiry_date,
+        gender,
+        phoneNo,
+        emergency_phoneNo,
+        emergency_contact,
+        next_of_kin,
+        nok_name,
+        nok_phoneNo,
+        nok_email,
+        nok_relationship,
+        mailing_address,
+        billing_address,
+        allergies_or_diet,
+        allergies,
+        medical_conditions,
+        dietary_restrictions,
+        current_medications,
+        general_practitioner
+      }
+    });
+
+    res.status(201).json(newMember); // Send the newly created member as JSON response
+  } catch (error) {
+    console.error('Error creating member:', error);
+    res.status(500).json({ error: 'Failed to create member' }); // Handle server error
+  }
+});
+
 
 // PUT update member by ID
 router.put('/:id', async (req, res) => {

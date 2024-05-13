@@ -23,6 +23,10 @@ router.get('/', async (req, res) => {
             where: {
               staff_id: parseInt(staff_id),
               appointment_date: parsedDate
+            },
+            sort: {
+              appointment_date: 'asc',
+              appointment_time: 'asc'
             }
           });
         } else {
