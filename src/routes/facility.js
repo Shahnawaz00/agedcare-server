@@ -90,5 +90,30 @@ router.delete('/:id', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+// PATCH - Partially update a facility
+router.patch('/:id', async (req, res) => {
+    const { id } = req.params;
+    let updateData = { ...req.body };
+
+    // Convert dateReserved to SQL datetime format if provided
+    if (updateData.date_reserved) {
+        updateData.date_reserved = convertToDate(updateData.date_reserved);
+    }
+
+    try {
+        const updatedFacility = await prisma.facility.update({
+            where: { facility_id: parseInt(id) },
+            data: updateData
+        });
+        res.json(updatedFacility);
+    } catch (error) {
+        console.error('Error updating facility:', error);
+        if (error.code === "P2025") { // Check for specific Prisma error code for not found
+            res.status(404).json({ error: 'Facility not found' });
+        } else {
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+});
 
 module.exports = router;

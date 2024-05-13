@@ -66,7 +66,6 @@ model Staff {
   role                String?
   availability        String?
   appointments        Appointment[]
-  Schedule            Schedule[]
 }
 
 model Service {
@@ -101,14 +100,6 @@ model Appointment {
   facility Facility @relation(fields: [facility_id], references: [facility_id], onUpdate: Cascade, onDelete: Cascade)
 }
 
-model Medication {
-  medication_id   Int         @id @default(autoincrement())
-  medication_name String
-  dosage_form     String
-  expiration_date DateTime
-  Inventory       Inventory[]
-}
-
 model Inventory {
   inventory_id   Int         @id @default(autoincrement())
   medication_id  Int?
@@ -116,14 +107,4 @@ model Inventory {
   category       String?
   name           String?
   last_restocked DateTime
-  medication     Medication? @relation(fields: [medication_id], references: [medication_id], onUpdate: Cascade, onDelete: Cascade)
-}
-
-model Schedule {
-  schedule_id      Int      @id @default(autoincrement())
-  staff_id         Int
-  date             DateTime
-  shift_start_time String
-  shift_end_time   String
-  staff Staff @relation(fields: [staff_id], references: [staff_id], onUpdate: Cascade, onDelete: Cascade)
 }
