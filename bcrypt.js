@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 
 const saltRounds = 10; // Number of salt rounds for hashing
-const password = '1'; // Replace with the actual password
+const password = 'bob'; // Replace with the actual password
 
 bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
   if (err) {
@@ -15,7 +15,7 @@ bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
 const crypto = require('crypto');
 
 // Generate a random string of 64 bytes (512 bits)
-const secretKey = crypto.randomBytes(64).toString('hex');
+// const secretKey = crypto.randomBytes(64).toString('hex');
 
-console.log('Generated secret key:', secretKey);
+// console.log('Generated secret key:', secretKey);
 

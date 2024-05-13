@@ -26,11 +26,24 @@ model Member {
   email                String?       @unique
   password             String?
   date_of_birth        DateTime
+  medicare_number      String?
+  medicare_irn         String?
+  medicare_expiry_date DateTime?
   gender               String
-  emergency_contact    String
-  next_of_kin          String
+  phoneNo              String?
+  emergency_phoneNo    String?
+  emergency_contact    String?
+  next_of_kin          String?
+  nok_name             String?
+  nok_phoneNo          String?
+  nok_email            String?
+  nok_relationship     String?
   mailing_address      String
+  billing_address      String?
   allergies_or_diet    String?
+  allergies            String?
+  medical_conditions   String?
+  dietary_restrictions String? 
   current_medications  String?
   general_practitioner String?
   appointments         Appointment[]
@@ -39,9 +52,16 @@ model Member {
 model Staff {
   staff_id            Int           @id @default(autoincrement())
   name                String
+  lname               String?
   email               String?       @unique
   password            String?
   contact_information String
+  phoneNo             String?
+  mailing_address     String?
+  billing_address     String?
+  emergency_contact   String?
+  date_of_birth       DateTime?
+  gender              String?
   qualifications      String?
   role                String?
   availability        String?
@@ -91,8 +111,10 @@ model Medication {
 
 model Inventory {
   inventory_id   Int         @id @default(autoincrement())
-  medication_id  Int
+  medication_id  Int?
   quantity       Int
+  category       String?
+  name           String?
   last_restocked DateTime
   medication     Medication? @relation(fields: [medication_id], references: [medication_id], onUpdate: Cascade, onDelete: Cascade)
 }
