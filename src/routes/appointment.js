@@ -22,10 +22,6 @@ router.get('/', async (req, res) => {
         appointments = await prisma.appointment.findMany({
           where: {
             appointment_date: parsedDate
-          },
-          sort: {
-            appointment_date: 'asc',
-            appointment_time: 'asc'
           }
         });
       } else {

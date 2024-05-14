@@ -36,7 +36,7 @@ router.get('/:id', async (req, res) => {
 // POST create new inventory item
 router.post('/', async (req, res) => {
 
-    const {category,name } = req.body;
+    const {category,name, supplier_name } = req.body;
     const medication_id = parseInt(req.body.medication_id);
     const quantity = parseInt(req.body.quantity);
     const last_restocked = convertToDate(req.body.last_restocked);
@@ -47,6 +47,7 @@ router.post('/', async (req, res) => {
                 medication_id,
                 category,
                 name,
+                supplier_name,
                 quantity,
                 last_restocked,
             },

@@ -106,5 +106,15 @@ model Inventory {
   quantity       Int
   category       String?
   name           String?
-  last_restocked DateTime
+  supplier_name   String?
+  last_restocked DateTime?
+  medication     Medication? @relation(fields: [medication_id], references: [medication_id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model Medication {
+  medication_id   Int         @id @default(autoincrement())
+  medication_name String
+  dosage_form     String
+  expiration_date DateTime
+  Inventory       Inventory[]
 }
